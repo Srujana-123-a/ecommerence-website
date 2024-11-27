@@ -46,6 +46,8 @@ const restaurants = [
       { id: 1, name: 'California', price: 8.99 },
       { id: 1, name: 'cheese California Roll', price: 8.99 },
       { id: 1, name: 'chicken Roll', price: 8.99 },
+      { id: 1, name: 'chicken Roll', price: 8.99 },
+
     ]
   },
   { 
