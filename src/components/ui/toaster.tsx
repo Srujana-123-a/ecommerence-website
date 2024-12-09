@@ -9,21 +9,9 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
-import { useEffect } from 'react'
 
 export function Toaster() {
   const { toasts } = useToast()
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (toasts.length > 0) {
-        const [, ...rest] = toasts;
-        useToast().dismiss(toasts[0].id);
-      }
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [toasts]);
 
   return (
     <ToastProvider>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Nav } from '../components/nav'
 import { Button } from "@/components/ui/button"
 import { Trash2, ShoppingCart, Heart } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
@@ -60,7 +59,6 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Nav />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Your Wishlist</h1>
         {wishlist.length === 0 ? (
