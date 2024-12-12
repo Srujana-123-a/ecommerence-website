@@ -1,15 +1,15 @@
 import Image from 'next/image'
 import { Card, CardContent } from "@/components/ui/card"
 import { Footer } from '../components/footer'
-import imm from "@/app/sru6.jpg"
-import im1 from "@/app/sru5.jpg"
-import imm2 from "@/app/sru8.jpg"
+// import imm from "@/app/sru6.jpg"
+// import im1 from "@/app/sru5.jpg"
+// import imm2 from "@/app/sru8.jpg"
 
 export default function MenuCard() {
   const menuSections = [
     {
       title: "BURGERS",
-      image: imm,
+      image: '/sru6.jpg',
       items: [
         { name: "Cabernet Franc", price: 5.50 },
         { name: "Cabernet Sauvignon", price: 5.50 },
@@ -22,7 +22,7 @@ export default function MenuCard() {
     },
     {
       title: "HOT DOGS",
-      image: im1,
+      image: '/sru5.jpg',
       items: [
         { name: "Cabernet Franc", price: 5.50 },
         { name: "Cabernet Sauvignon", price: 5.50 },
@@ -35,7 +35,7 @@ export default function MenuCard() {
     },
     {
       title: "DRINKS",
-      image: imm2,
+      image: '/sru7.jpg',
       items: [
         { name: "Cabernet Franc", price: 5.50 },
         { name: "Cabernet Sauvignon", price: 5.50 },

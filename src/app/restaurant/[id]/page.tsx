@@ -1,17 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Star, Clock, MapPin, Heart, Users, X, MessageSquare } from 'lucide-react'
-import img1 from "@/app/ima1.jpg"
-import img2 from '@/app/sru5.jpg'
-import img3 from '@/app/sru6.jpg'
-import img4 from '@/app/sru7.jpg'
-import img5 from '@/app/sru8.jpg'
+import Link from 'next/link'
 import { useToast } from "@/components/ui/use-toast"
 import {
   Card,
@@ -27,6 +22,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radie-group"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useTheme } from "next-themes"
 
 // Mock restaurant data
 const initialRestaurant = {
@@ -45,7 +41,7 @@ const initialRestaurant = {
       price: 175.50,
       originalPrice: 195,
       discount: 10,
-      image: img1,
+      image: '/sru1.jpg',
       type: 'non-veg',
       isBestseller: true,
       ratings: [],
@@ -56,7 +52,7 @@ const initialRestaurant = {
       price: 214.20,
       originalPrice: 238,
       discount: 10,
-      image: img2,
+      image: '/sru6.jpg',
       type: 'non-veg',
       ratings: [
         { rating: 4, comment: "Delicious biryani!" },
@@ -71,7 +67,7 @@ const initialRestaurant = {
       price: 207,
       originalPrice: 230,
       discount: 10,
-      image: img4,
+      image: '/sru5.jpg',
       type: 'non-veg',
       description: 'White Rice [300 g]+Chicken Gravy [50 g]+1 Egg+Rasam+Leaf',
       ratings: [],
@@ -83,7 +79,7 @@ const initialRestaurant = {
       price: 150,
       originalPrice: 180,
       discount: 15,
-      image: img3,
+      image: '/sru3.jpg',
       type: 'veg',
       ratings: [],
     },
@@ -93,7 +89,7 @@ const initialRestaurant = {
       price: 220,
       originalPrice: 250,
       discount: 12,
-      image: img5,
+      image: '/sru2.jpg',
       type: 'veg',
       ratings: [],
     },
@@ -103,7 +99,7 @@ const initialRestaurant = {
       price: 280,
       originalPrice: 320,
       discount: 12,
-      image: img1,
+      image: '/sru1.jpg',
       type: 'non-veg',
       ratings: [],
     },
@@ -113,7 +109,85 @@ const initialRestaurant = {
       price: 40,
       originalPrice: 50,
       discount: 20,
-      image: img2,
+      image: '/sru8.jpg',
+      type: 'veg',
+      ratings: [],
+    },
+    {
+      id: 8,
+      name: 'Chicken Gravy',
+      price: 175.50,
+      originalPrice: 195,
+      discount: 10,
+      image: '/sru7.jpg',
+      type: 'non-veg',
+      isBestseller: true,
+      ratings: [],
+    },
+    {
+      id: 8,
+      name: 'Chicken Biryani',
+      price: 214.20,
+      originalPrice: 238,
+      discount: 10,
+      image: '/sru6.jpg',
+      type: 'non-veg',
+      ratings: [
+        { rating: 4, comment: "Delicious biryani!" },
+        { rating: 5, comment: "Best in town" }
+      ],
+      stars: 10,
+      description: 'Traditional seeraga samba cooked biryani with succulent pieces [bone in]',
+    },
+    {
+      id: 11,
+      name: 'White Rice with Chicken Gravy [Half]',
+      price: 207,
+      originalPrice: 230,
+      discount: 10,
+      image: '/sru5.jpg',
+      type: 'non-veg',
+      description: 'White Rice [300 g]+Chicken Gravy [50 g]+1 Egg+Rasam+Leaf',
+      ratings: [],
+    },
+    // Add more menu items to test pagination
+    {
+      id: 12,
+      name: 'Vegetable Fried Rice',
+      price: 150,
+      originalPrice: 180,
+      discount: 15,
+      image: '/sru4.jpg',
+      type: 'veg',
+      ratings: [],
+    },
+    {
+      id: 13,
+      name: 'Paneer Butter Masala',
+      price: 220,
+      originalPrice: 250,
+      discount: 12,
+      image: '/sru3.jpg',
+      type: 'veg',
+      ratings: [],
+    },
+    {
+      id: 14,
+      name: 'Tandoori Chicken',
+      price: 280,
+      originalPrice: 320,
+      discount: 12,
+      image: '/sru2.jpg',
+      type: 'non-veg',
+      ratings: [],
+    },
+    {
+      id: 15,
+      name: 'Garlic Naan',
+      price: 40,
+      originalPrice: 50,
+      discount: 20,
+      image: '/sru1.jpg',
       type: 'veg',
       ratings: [],
     },
@@ -137,6 +211,7 @@ type MenuItem = {
 type SortOption = 'price-low-high' | 'price-high-low' | 'rating-high-low'
 
 export default function RestaurantPage() {
+  const { theme, setTheme } = useTheme()
   const { toast } = useToast()
   const [activeFilter, setActiveFilter] = useState<'all' | 'veg' | 'egg' | 'non-veg'>('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -152,6 +227,11 @@ export default function RestaurantPage() {
   const [restaurant, setRestaurant] = useState(initialRestaurant)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 6
+
+  useEffect(() => {
+    const storedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+    setWishlist(storedWishlist.map((item: MenuItem) => item.id))
+  }, [])
 
   const filteredItems = restaurant.menu.filter(item => {
     const matchesFilter = activeFilter === 'all' || item.type === activeFilter
@@ -192,22 +272,32 @@ export default function RestaurantPage() {
     toast({
       title: "Added to Cart",
       description: `${item.name} has been added to your cart.`,
-      className: "bg-black text-white",
+      variant: "default",
+      className:'bg-black text-white',
     })
   }
 
-  const toggleWishlist = (itemId: number) => {
-    setWishlist(prev => {
-      const newWishlist = prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-      return newWishlist
-    })
+  const toggleWishlist = (item: MenuItem) => {
+    const existingWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+    const itemIndex = existingWishlist.findIndex((wishlistItem: MenuItem) => 
+      wishlistItem.id === item.id && wishlistItem.restaurantId === restaurant.id
+    )
+    
+    if (itemIndex > -1) {
+      existingWishlist.splice(itemIndex, 1)
+      setWishlist(prev => prev.filter(id => id !== item.id))
+    } else {
+      existingWishlist.push({...item, restaurantId: restaurant.id})
+      setWishlist(prev => [...prev, item.id])
+    }
+    
+    localStorage.setItem('wishlist', JSON.stringify(existingWishlist))
     
     toast({
-      title: wishlist.includes(itemId) ? "Removed from Wishlist" : "Added to Wishlist",
-      description: `Item has been ${wishlist.includes(itemId) ? 'removed from' : 'added to'} your wishlist.`,
-      className: "bg-black text-white",
+      title: itemIndex > -1 ? "Removed from Wishlist" : "Added to Wishlist",
+      description: `${item.name} has been ${itemIndex > -1 ? 'removed from' : 'added to'} your wishlist.`,
+      variant: "default",
+      className:'bg-black text-white',
     })
   }
 
@@ -247,14 +337,14 @@ export default function RestaurantPage() {
     toast({
       title: "Review Submitted",
       description: "Thank you for your feedback!",
-      className: "bg-black text-white",
+      variant: "default",
     })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white">
       {/* Restaurant Header */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-start">
             <div>
@@ -279,39 +369,42 @@ export default function RestaurantPage() {
                 </span>
               </div>
             </div>
-            
+           
           </div>
 
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg flex items-center gap-2">
+          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center gap-2">
             <span className="text-red-500">🛵</span>
             <span>Free Delivery above ₹{restaurant.freeDeliveryAbove}</span>
-          
+           
           </div>
         </div>
       </div>
-      {/* After the free delivery section */}
-{/* After the free delivery section */}
-<div className="mt-4 flex items-center space-x-4 ">
-  <div className="relative w-64  bg-black text-white ml-20"> {/* Reduced width to w-64 (256px) */}
-    <Input
-      type="text"
-      placeholder={`Search in ${restaurant.name}`}
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="pl-10 w-full" // Added w-full to ensure input fills the container
-    />
-    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-  </div>
-  <Link href="/Menu">
-    <Button variant="outline" className="gap-2  bg-black text-white">
-      <span className="text-xl">🍽️</span>
-      Menu
-    </Button>
-  </Link>
-</div>
+
+       {/* Bottom Search Bar */}
+      <div className=" bg-white dark:bg-gray-800 border-t p-4 m-10">
+        <div className=" dark:bg-gray-700 text-black dark:text-white container mx-auto flex gap-4">
+          <div className="flex-1 relative">
+            <Input
+              type="text"
+              placeholder={`Search in ${restaurant.name}`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          </div>
+          <Link href="/Menu">
+          <Button variant="outline" className="gap-2">
+           
+            <span className="text-xl">🍽️</span>
+            Menu
+          </Button></Link>
+        </div>
+      </div>
+
 
       {/* Filters and Search */}
-      <div className="sticky top-0 bg-white shadow-sm z-10">
+      <div className="sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10">
         <div className="container mx-auto px-4 py-3">
           <div className="flex gap-4 items-center">
             <Button 
@@ -342,8 +435,8 @@ export default function RestaurantPage() {
               onClick={() => setActiveFilter('non-veg')}
               className="flex items-center gap-2"
             >
-              <span className="w-4 h-4 border-2 border-orange-500 rounded-full flex items-center justify-center">
-                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+              <span className="w-4 h-4 border-2 border-red-500 rounded-full flex items-center justify-center">
+                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
               </span>
               Non-veg
             </Button>
@@ -356,14 +449,14 @@ export default function RestaurantPage() {
         <h2 className="text-xl font-semibold mb-4">Recommended for you</h2>
         <div className="space-y-6">
           {paginatedItems.map((item) => (
-            <Card key={item.id} className="overflow-hidden">
+            <Card key={item.id} className="overflow-hidden dark:bg-gray-700">
               <CardContent className="p-0">
                 <div className="flex justify-between p-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       {item.type === 'non-veg' && (
-                        <span className="w-4 h-4 border-2 border-orange-500 rounded-full flex items-center justify-center">
-                          <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                        <span className="w-4 h-4 border-2 border-red-500 rounded-full flex items-center justify-center">
+                          <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                         </span>
                       )}
                       {item.type === 'veg' && (
@@ -415,7 +508,7 @@ export default function RestaurantPage() {
                     )}
                     <div className="flex items-center gap-4 mt-2">
                       <button
-                        onClick={() => toggleWishlist(item.id)}
+                        onClick={() => toggleWishlist(item)}
                         className="flex items-center gap-2 text-gray-600"
                       >
                         <Heart className={`w-4 h-4 ${wishlist.includes(item.id) ? 'fill-red-500 text-red-500' : ''}`} />
@@ -472,31 +565,10 @@ export default function RestaurantPage() {
         </div>
       </div>
 
-      {/* Bottom Search Bar */}
-      {/* <div className="fixed bottom-0 left-0 right-0 bg-black text-white border-t p-4"> */}
-        {/* <div className="container mx-auto flex gap-4">
-          <div className="flex-1 relative">
-            <Input
-              type="text"
-              placeholder={`Search in ${restaurant.name}`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          </div>
-          <Link href="/Menu">
-         
-          <Button variant="outline" className="gap-2">
-            <span className="text-xl">🍽️</span>
-            Menu
-          </Button></Link>
-        </div> */}
-      {/* </div> */}
-
+     
       {/* Filters Dialog */}
       <Dialog open={showFilters} onOpenChange={setShowFilters}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] dark:bg-gray-800 dark:text-white">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               Filters and Sorting
@@ -553,14 +625,14 @@ export default function RestaurantPage() {
             </div>
 
             <div className="flex justify-between">
-              <Button  style={{backgroundColor:'black',color:'white'}} variant="outline" onClick={() => {
+              <Button variant="outline" onClick={() => {
                 setSortBy('rating-high-low')
                 setShowTopPicks(false)
                 setShowSpicyOnly(false)
               }}>
                 Clear All
               </Button>
-              <Button  style={{backgroundColor:'black',color:'white'}} onClick={() => setShowFilters(false)} >
+              <Button onClick={() => setShowFilters(false)}>
                 Apply
               </Button>
             </div>
@@ -570,7 +642,7 @@ export default function RestaurantPage() {
 
       {/* Review Dialog */}
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent>
+        <DialogContent className="dark:bg-gray-800 dark:text-white">
           <DialogHeader>
             <DialogTitle>Write a Review</DialogTitle>
           </DialogHeader>
@@ -593,7 +665,7 @@ export default function RestaurantPage() {
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
             />
-            <Button style={{backgroundColor:'black',color:'white'}} onClick={handleReviewSubmit}>Submit Review</Button>
+            <Button onClick={handleReviewSubmit}>Submit Review</Button>
           </div>
         </DialogContent>
       </Dialog>

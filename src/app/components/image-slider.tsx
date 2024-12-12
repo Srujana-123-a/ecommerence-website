@@ -2,16 +2,12 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import one from '@/app/sru5.jpg'
-import two from '@/app/sru6.jpg'
-import three from '@/app/sru7.jpg'
-import four from '@/app/sru8.jpg'
 
 const sliderImages = [
-  one,
-  two,
-  three,
-  four,
+  '/sru5.jpg',
+  '/sru6.jpg',
+  '/sru7.jpg',
+  '/sru8.jpg',
 ]
 
 export function ImageSlider() {
@@ -30,7 +26,7 @@ export function ImageSlider() {
       {sliderImages.map((src, index) => (
         <div
           key={index}
-          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-4000 ease-in-out ${
+          className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
@@ -56,3 +52,4 @@ export function ImageSlider() {
     </div>
   )
 }
+

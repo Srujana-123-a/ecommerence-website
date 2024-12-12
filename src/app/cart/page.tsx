@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 
 type CartItem = {
   id: number;
@@ -42,6 +43,7 @@ export default function Cart() {
   const [paymentMethod, setPaymentMethod] = useState('credit_card')
   const { toast } = useToast()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart')
@@ -126,25 +128,34 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Your Cart</h1>
+          <Button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            variant="outline"
+            size="sm"
+          >
+            {theme === "dark" ? "🌞 Light" : "🌙 Dark"}
+          </Button>
+        </div>
         {cart.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-lg text-gray-600 mb-4">Your cart is empty</p>
-            <p className="text-md text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">Your cart is empty</p>
+            <p className="text-md text-gray-500 dark:text-gray-400 mb-6">Looks like you haven't added any items to your cart yet.</p>
             <Link href="/home">
               <Button className="w-full">Continue Shopping</Button>
             </Link>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div className="mb-6">
               {cart.map((item) => (
-                <div key={`${item.id}-${item.restaurantId}`} className="flex justify-between items-center mb-4 pb-4 border-b">
+                <div key={`${item.id}-${item.restaurantId}`} className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                   <div>
                     <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">${item.price.toFixed(2)} each</p>
                   </div>
                   <div className="flex items-center">
                     <Button 
@@ -175,7 +186,7 @@ export default function Cart() {
               ))}
               <div className="mt-6 flex justify-between items-center">
                 <p className="text-xl font-bold">Total:</p>
-                <p className="text-2xl font-bold text-orange-500">{totalPrice.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-orange-500">${totalPrice.toFixed(2)}</p>
               </div>
             </div>
 
@@ -188,7 +199,7 @@ export default function Cart() {
             </Button>
 
             {showCheckout && (
-              <div className="mt-8 border-t pt-6">
+              <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <h2 className="text-2xl font-semibold mb-4">Delivery Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
